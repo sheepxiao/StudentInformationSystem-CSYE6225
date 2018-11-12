@@ -38,7 +38,7 @@ public class StudentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Student updateProfessor(@PathParam("studentID") String studentID, Student student) {
-		return studentService.updateProfessorInformation(studentID, student);
+		return studentService.updateStudentInformation(studentID, student);
 	}
 	
 	@DELETE
