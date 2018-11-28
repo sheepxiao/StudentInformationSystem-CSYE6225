@@ -16,7 +16,7 @@ public class DynamoDbConnector {
 		dynamoDb = AmazonDynamoDBClientBuilder
 					.standard()
 					.withCredentials(credentialsProvider)
-					.withRegion("us-east-1")
+					.withRegion("us-east-2")
 					.build();		
 		System.out.println("I created the client");
 		} 
