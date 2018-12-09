@@ -8,6 +8,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.csye6225.fall2018.courseservice.datamodel.DynamoDbConnector;
 import com.csye6225.fall2018.courseservice.datamodel.Board;
+import com.csye6225.fall2018.courseservice.datamodel.Course;
 
 public class BoardService {
 	static DynamoDbConnector dynamoDb;

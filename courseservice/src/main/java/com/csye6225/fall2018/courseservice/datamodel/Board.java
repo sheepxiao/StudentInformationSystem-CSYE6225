@@ -13,7 +13,7 @@ public class Board {
     private String boardId;
     private String courseId;
     
-    private Board() {
+    public Board() {
     	
     }
     

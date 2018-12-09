@@ -18,17 +18,20 @@ public class Course {
 	private String department;
 	private String boardId;
 	private List<String> roster;
+	private String snsTopicArn;
 	
-	private Course() {
+	
+	public Course() {
 		
 	}
 	
-	public Course(String courseId, String professorId, String taId, String department, String boardId, List<String> roster) {
+	public Course(String courseId, String professorId, String taId, String department, String boardId, List<String> roster, String snsTopicArn) {
 		this.professorId = professorId;
 		this.taId = taId;
 		this.department = department;
 		this.boardId = boardId;
 		this.roster = roster;
+		this.snsTopicArn = snsTopicArn;
 	}
 
 
@@ -97,6 +100,15 @@ public class Course {
 
 	public void setRoster(List<String> roster) {
 		this.roster = roster;
+	}
+	
+	@DynamoDBAttribute(attributeName="snsTopicArn")
+	public String getSNSTopicArn() {
+		return snsTopicArn;
+	}
+ 	
+	public void setSNSTopicArn(String snsTopicArn) {
+		this.snsTopicArn = snsTopicArn;
 	}
 	
    

@@ -15,7 +15,7 @@ public class Announcement {
     private String announcementText;
     private String boardId;
     
-    private Announcement() {
+    public Announcement() {
     	
     }
     

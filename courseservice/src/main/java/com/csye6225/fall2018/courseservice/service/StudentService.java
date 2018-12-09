@@ -6,9 +6,11 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.csye6225.fall2018.courseservice.datamodel.Course;
 import com.csye6225.fall2018.courseservice.datamodel.DynamoDbConnector;
 import com.csye6225.fall2018.courseservice.datamodel.InMemoryDatabase;
 import com.csye6225.fall2018.courseservice.datamodel.Student;
+import com.csye6225.fall2018.courseservice.EmailAnnouncement;
 
 public class StudentService {
 	static Map<Long, Student> studentMap = InMemoryDatabase.getStudentDB();
@@ -41,7 +43,7 @@ public class StudentService {
 	//POST, add a new student
 	public Student addStudent(Student student) {	
 		Student newStudent = new Student(student.getStudentId(), student.getFirstName(), student.getLastName(), 
-				student.getJoiningDate(), student.getDepartment(), student.getRegisteredCourses());
+				student.getJoiningDate(), student.getDepartment(), student.getRegisteredCourses(), student.getEmailId());
 		mapper.save(newStudent);
 		
 		System.out.println("Item added.");
@@ -60,6 +62,7 @@ public class StudentService {
 			oldStudent.setJoiningDate(student.getJoiningDate());
 			oldStudent.setDepartment(student.getDepartment());
 			oldStudent.setRegisteredCourses(student.getRegisteredCourses());
+			oldStudent.setEmailId(student.getEmailId());
 			mapper.save(oldStudent);
 			System.out.println("Updated.");
 			System.out.println(oldStudent.toString());
@@ -83,6 +86,29 @@ public class StudentService {
 		}
 		return student;
 	}
+	
+	// register for a course 
+		public Student registerCourse(String studentId, Course course){
+			List<Student> list = getStudentFromDynamoDB(studentId);
+			CourseService courseSer = new CourseService();
+			Student stu = null;
+			if(list.size() != 0) {
+				stu = list.get(0);
+				System.out.println(course.getCourseId());
+				if(stu.getRegisteredCourses().size() < 3) {
+					stu.getRegisteredCourses().add(course.getCourseId());
+					course.getRoster().add(studentId);
+					
+					// update information in database
+					updateStudentInformation(studentId,stu);
+					courseSer.updateCourseInformation(course.getCourseId(), course);
+					
+					EmailAnnouncement.subscribe(course.getSNSTopicArn(), stu.getEmailId());
+				}
+			}
+			
+			return stu;
+		}
 	
 	public List<Student> getStudentFromDynamoDB(String stuId){
 	    HashMap<String, AttributeValue> eav = new HashMap<String, AttributeValue>();

@@ -7,6 +7,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.csye6225.fall2018.courseservice.datamodel.Student;
 import com.csye6225.fall2018.courseservice.service.StudentService;
+import com.csye6225.fall2018.courseservice.datamodel.Course;
 
 @Path("students")
 public class StudentResource {
@@ -46,5 +47,13 @@ public class StudentResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Student deleteStudent(@PathParam("studentID") String studentID) {
 		return studentService.deleteStudent(studentID);
+	}
+	
+	@POST
+	@Path("/{studentId}/register")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Student registerCourse(@PathParam("studentId") String studentId, Course course) {
+		return studentService.registerCourse(studentId, course);
 	}
  }

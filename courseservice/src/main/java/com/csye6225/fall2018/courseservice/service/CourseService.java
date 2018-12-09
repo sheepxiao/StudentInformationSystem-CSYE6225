@@ -8,6 +8,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.csye6225.fall2018.courseservice.datamodel.Course;
 import com.csye6225.fall2018.courseservice.datamodel.DynamoDbConnector;
+import com.csye6225.fall2018.courseservice.datamodel.Board;
+import com.csye6225.fall2018.courseservice.EmailAnnouncement;
 
 public class CourseService {
 	static DynamoDbConnector dynamoDb;
@@ -39,10 +41,15 @@ public class CourseService {
 	
     //POST, add a new course
 	public Course addCourse(Course course) {
+		String topicArn = EmailAnnouncement.createTopic("course"+course.getCourseId());
 	    Course newCourse = new Course(course.getCourseId(), course.getProfessorId(), 
 	    		course.getTaId(), course.getDepartment(), 
-	    		course.getBoardId(), course.getRoster());
+	    		course.getBoardId(), course.getRoster(), topicArn);
 		mapper.save(newCourse);
+		
+		Board board = new Board(newCourse.getBoardId(),newCourse.getCourseId());
+		BoardService boardSer = new BoardService();
+		boardSer.addBoard(board);
 			
 		System.out.println("Item added:");
 		System.out.println(newCourse.toString());	    
@@ -59,7 +66,8 @@ public class CourseService {
 			oldCourse.setTaId(course.getTaId());
 			oldCourse.setDepartment(course.getDepartment());
 			oldCourse.setBoardId(course.getBoardId());
-			oldCourse.setRoster(course.getRoster());;
+			oldCourse.setRoster(course.getRoster());
+			oldCourse.setSNSTopicArn(course.getSNSTopicArn());
 			mapper.save(oldCourse);
 			System.out.println("Item updated:");
 		    System.out.println(oldCourse.toString());
