@@ -1,0 +1,114 @@
+{
+    "StartAt": "If newCourse",
+    "States": {
+      "If newCourse": {
+            "Type": "Choice",
+            "Choices": [
+                {
+                    "Or": [ 
+                      {
+                        "Variable": "$.boardId",
+                        "StringEquals": "NULL"
+                      },
+                      {
+                        "Variable": "$.snsTopicArn ",
+                        "StringEquals": "NULL"
+                      }
+                     ],
+                    "Next": "If seminar"
+                }
+            ],
+            "Default": "not newCourse"
+        },
+       
+        "not newCourse": {
+            "Type": "Succeed"
+        },
+       "If seminar": {
+            "Type": "Choice",
+            "Choices": [
+             {
+                    "Variable": "$.department",
+                    "StringEquals": "Seminar",
+                
+                     "Next": "Is seminar" 
+              }
+                
+          ],
+             "Default": "register"       
+          },
+      "register":{
+         "Type": "Task",
+            "Resource": "arn:aws:states:::dynamodb:putItem",
+            "Parameters": {
+                "TableName": "registrar",
+                "Item": {
+                  "department": {
+                    "S.$": "$.department"
+                  },
+                  "offeringId": {
+                    "S.$": "$.courseId"
+                  },
+                  "offeringType": {
+                    "S": "Course"
+                  },
+                  "perUnitPrice": {
+                    "N": "1500"
+                  },
+                  "Id": {
+                    "S.$": "$.Id"
+                  }
+                }
+            },
+            "ResultPath": "$.DynamoDB",
+          "Next": "creat newBoard"
+      },
+      "Is seminar" : {
+        "Type": "Succeed"
+      },
+      
+      "creat newBoard": {
+       "Type": "Task",
+            "Resource": "arn:aws:states:::dynamodb:putItem",
+            "Parameters": {
+                "TableName": "board",
+                "Item": {
+                  "Id": {
+                    "S.$": "$.Id"
+                  }, 
+                  "boardId": {
+                    "S.$": "$.courseId"
+                  },
+                 
+                  "courseId": {
+                    "S.$": "$.courseId"
+                  }
+                }
+            },
+            "ResultPath": "$.DynamoDB",
+            "Next": "update originCourse"
+      },
+      
+      "update originCourse" :{
+            "Type": "Task",
+            "Resource": "arn:aws:states:::dynamodb:updateItem",
+            "Parameters": {
+                 "TableName": "Courses",
+                 "Key": {
+                     "Id": {
+                       "S.$": "$.Id"
+                       }
+                    },
+                 
+               "UpdateExpression": "SET boardId = :updateBoardId",
+               "ExpressionAttributeValues": {
+                   ":updateBoardId": {
+                       "S.$": "$.courseId"
+                    }
+                 }
+               
+             },
+            "End": true
+        }
+    }
+}

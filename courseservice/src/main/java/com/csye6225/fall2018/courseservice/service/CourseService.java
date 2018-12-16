@@ -47,9 +47,11 @@ public class CourseService {
 	    		course.getBoardId(), course.getRoster(), topicArn);
 		mapper.save(newCourse);
 		
-		Board board = new Board(newCourse.getBoardId(),newCourse.getCourseId());
-		BoardService boardSer = new BoardService();
-		boardSer.addBoard(board);
+		if(!course.getBoardId().equals("")) {
+			Board board = new Board(newCourse.getBoardId(),newCourse.getCourseId());
+			BoardService boardSer = new BoardService();
+			boardSer.addBoard(board);
+		}
 			
 		System.out.println("Item added:");
 		System.out.println(newCourse.toString());	    
